@@ -11,6 +11,7 @@ import (
 	"errors"
 	"github.com/ewangplay/config"
 	"strconv"
+
 )
 
 type Configure struct {
@@ -55,9 +56,8 @@ func (this *Configure) ParseConfigure(filename string) error {
 		return err
 	}
 
-
+	this.loopConfigure("server", cfg)
 	this.loopConfigure("service", cfg)
-	this.loopConfigure("log", cfg)
 	this.loopConfigure("redis", cfg)
 
 

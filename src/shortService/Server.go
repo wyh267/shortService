@@ -10,7 +10,9 @@ package main
 import (
 	"fmt"
 	"flag"
+	"net/http"
 	"shortlib"
+	"os"
 )
 
 func main(){
@@ -26,16 +28,36 @@ func main(){
 	}
 	
 	//启动Redis客户端
-	redis-cli,err := shortlib.NewRedisAdaptor(configure)
+	redis_cli,err := shortlib.NewRedisAdaptor(configure)
 	if err != nil {
 		fmt.Printf("[ERROR] Redis init fail..\n")
 		return
 	}
 	
+	//初始化两个短连接服务
+	baseprocessor := &shortlib.BaseProcessor{redis_cli}
+	
+	original := &OriginalProcessor{baseprocessor}
+	short := &ShortProcessor{baseprocessor}
+	
+	//启动http handler
+	router := &shortlib.Router{configure,map[int]shortlib.Processor{
+		0:short,
+		1:original,
+	}}
+	
 	//启动服务
 	
+	port, _ := configure.GetPort()
+	addr := fmt.Sprintf(":%d", port)
+	fmt.Printf("[INFO]服务启动。。。地址:%v,端口:%v\n",addr,port)
+	err = http.ListenAndServe(addr, router)
+	if err != nil {
+		//logger.Error("Server start fail: %v", err)
+		os.Exit(1)
+	}
 
-
+	
 
 }
 

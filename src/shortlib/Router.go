@@ -5,22 +5,24 @@
 	> Created Time: 日  6/14 16:00:54 2015
  ************************************************************************/
  
- package shorlib
+ package shortlib
  
  import (
 	"fmt"
 	"net/http"
+	"regexp"
 )
 
 type Router struct {
 	Configure  *Configure
+	Processors map[int]Processor
 }
 
-const {
+const (
 	SHORT_URL = 0
 	ORIGINAL_URL = 1
 	UNKOWN_URL = 2
-}
+)
 
 //路由设置
 //数据分发
@@ -30,7 +32,7 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("[ERROR]parse url fail : %v \n",err)
 	}
-	switch action{
+	switch action {
 		//请求的是短连接，需要返回跳转的原始连接
 		case SHORT_URL:
 		
@@ -44,12 +46,12 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func (this *Router) ParseURL(url string) (action int, err error) {
+func (this *Router) ParseUrl(url string) (action int, err error) {
 
-	if isShortUrl(url){
-		return SHORT_URL
+	if this.isShortUrl(url){
+		return SHORT_URL,nil
 	}else{
-		return ORIGINAL_URL
+		return ORIGINAL_URL,nil
 	}
 
 }
@@ -62,7 +64,7 @@ func (this *Router) isShortUrl(url string) bool{
 	if err != nil {
 		return false
 	}
-	short_match := urlRegexp.FindStringSubmatch(url)
+	short_match := url_reg_exp.FindStringSubmatch(url)
 	if short_match == nil {
 		return true
 	}

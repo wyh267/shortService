@@ -7,7 +7,7 @@
 package shortlib
 
 import (
-	"errors"
+	//"errors"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 )
@@ -23,8 +23,9 @@ func NewRedisAdaptor(config *Configure) (*RedisAdaptor, error) {
 
 	host, _ := config.GetRedisHost()
 	port, _ := config.GetRedisPort()
-
+	
 	connStr := fmt.Sprintf("%v:%v", host, port)
+	fmt.Printf(connStr)
 	conn, err := redis.Dial("tcp", connStr)
 	if err != nil {
 		return nil, err
