@@ -1,7 +1,7 @@
 /*************************************************************************
 	> File Name: Configure.go
 	> Author: Wu Yinghao
-	> Mail: wyh817@gmail.com 
+	> Mail: wyh817@gmail.com
 	> Created Time: 日  6/14 16:00:54 2015
  ************************************************************************/
 
@@ -11,7 +11,6 @@ import (
 	"errors"
 	"github.com/ewangplay/config"
 	"strconv"
-
 )
 
 type Configure struct {
@@ -60,7 +59,6 @@ func (this *Configure) ParseConfigure(filename string) error {
 	this.loopConfigure("service", cfg)
 	this.loopConfigure("redis", cfg)
 
-
 	return nil
 }
 
@@ -79,8 +77,6 @@ func (this *Configure) GetPort() (int, error) {
 
 	return port, nil
 }
-
-
 
 func (this *Configure) GetRedisHost() (string, error) {
 	redishost, ok := this.ConfigureMap["redishost"]
@@ -102,32 +98,27 @@ func (this *Configure) GetRedisPort() (string, error) {
 	return redisport, nil
 }
 
+func (this *Configure) GetRedisStatus() bool {
 
-func (this *Configure) GetRedisStatus()(bool) {
-
-	status,ok := this.ConfigureMap["status"]
+	status, ok := this.ConfigureMap["status"]
 	if ok == false {
-		return  true
+		return true
 	}
 
-	if status == "true"{
+	if status == "true" {
 		return true
 	}
 	return false
 
 }
 
-
 func (this *Configure) GetHostInfo() string {
 
-	host_name,ok := this.ConfigureMap["hostname"]
+	host_name, ok := this.ConfigureMap["hostname"]
 	if ok == false {
 		return "http://wusay.org/"
 	}
 
 	return host_name
 
-
 }
-
-

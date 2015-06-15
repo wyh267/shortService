@@ -25,7 +25,7 @@ func NewRedisAdaptor(config *Configure) (*RedisAdaptor, error) {
 
 	host, _ := config.GetRedisHost()
 	port, _ := config.GetRedisPort()
-	
+
 	connStr := fmt.Sprintf("%v:%v", host, port)
 	fmt.Printf(connStr)
 	conn, err := redis.Dial("tcp", connStr)
@@ -42,10 +42,9 @@ func (this *RedisAdaptor) Release() {
 	this.conn.Close()
 }
 
-
 func (this *RedisAdaptor) InitCountService() error {
 
-	_,err := this.conn.Do("SET",SHORT_URL_COUNT_KEY,0)
+	_, err := this.conn.Do("SET", SHORT_URL_COUNT_KEY, 0)
 	if err != nil {
 		return err
 	}
@@ -53,15 +52,14 @@ func (this *RedisAdaptor) InitCountService() error {
 
 }
 
+func (this *RedisAdaptor) NewShortUrlCount() (int64, error) {
 
-func (this *RedisAdaptor) NewShortUrlCount() (int64,error){
-
-	count,err := redis.Int64(this.conn.Do("INCR",SHORT_URL_COUNT_KEY))
+	count, err := redis.Int64(this.conn.Do("INCR", SHORT_URL_COUNT_KEY))
 	if err != nil {
-		return 0,err
+		return 0, err
 	}
 
-	return count,nil	
+	return count, nil
 
 }
 
@@ -78,7 +76,7 @@ func (this *RedisAdaptor) GetValue(cid int64, source string) (string, error) {
 
 func (this *RedisAdaptor) Append(cid int64, source, v string) (int64, error) {
 
-	
+
 	key := fmt.Sprintf("%v:%v", cid, source)
 	value := fmt.Sprintf("%v|", v)
 	count, err := this.conn.Do("APPEND", key, value)
