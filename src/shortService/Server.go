@@ -40,10 +40,15 @@ func main(){
 	}
 	}
 
+
+	//不使用redis的情况下，启动短链接计数器
+count_channl := make (chan CountChannl,1000)
+	go CountThread(count_channl)
+
 	//初始化两个短连接服务
 	baseprocessor := &shortlib.BaseProcessor{redis_cli,configure,configure.GetHostInfo()}
 	
-	original := &OriginalProcessor{baseprocessor}
+	original := &OriginalProcessor{baseprocessor,count_channl}
 	short := &ShortProcessor{baseprocessor}
 	
 	//启动http handler

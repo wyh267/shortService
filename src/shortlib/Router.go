@@ -29,7 +29,8 @@ const (
 //路由设置
 //数据分发
 func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	
+
+start:=TimeNow()
 	action,err := this.ParseUrl(r.RequestURI)
 	if err != nil {
 		fmt.Printf("[ERROR]parse url fail : %v \n",err)
@@ -52,7 +53,7 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("[ERROR] : %v\n",err)
 	}
-	
+DuringTime(start,"ServeHTTP")	
 	return 
 }
 

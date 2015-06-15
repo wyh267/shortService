@@ -20,6 +20,7 @@ import (
 
 type OriginalProcessor struct {
 	*shortlib.BaseProcessor
+	Count_Channl chan CountChannl
 }
 
 const POST string = "POST"
@@ -90,15 +91,27 @@ func (this *OriginalProcessor) ProcessRequest(method string,params map[string]st
 //
 func (this *OriginalProcessor) createUrl(original_url string) (string,error){
 
+start := shortlib.TimeNow()
+
 	count,err := this.RedisCli.NewShortUrlCount()
 	if err != nil {
 		return "",err
 	}
+/*
+	count_c := make(chan int64)
+	ch:=CountChannl{0,count_c}
+	this.Count_Channl <- ch
+	
+	count := <- count_c
+*/
+shortlib.DuringTime(start,"NewShortUrlCount")
+start = shortlib.TimeNow()
 	short_url,err := shortlib.TransNumToString(count)
 	if err != nil {
 		return "",err
 	}
 
+shortlib.DuringTime(start,"TransNumToString")
 	return short_url,nil
 
 }

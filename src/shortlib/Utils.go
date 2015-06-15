@@ -8,8 +8,9 @@
 package shortlib
 
 import (
-//	"fmt"
+	"fmt"
 	"container/list"
+	"time"
 )
 
 
@@ -27,7 +28,8 @@ func IsNormalUrl(url string) bool {
 
 
 func TransNumToString(num int64)(string,error){
-	
+
+startTime := TimeNow()
 	var base int64
 	base=62
 	baseHex:="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -41,6 +43,7 @@ func TransNumToString(num int64)(string,error){
 	for iter:=output_list.Front();iter!=nil;iter=iter.Next(){
 		str = str + string(baseHex[int(iter.Value.(int64))])
 	}
+DuringTime(startTime,"TransNumToString")
 	return str,nil
 }
 
@@ -49,6 +52,19 @@ func TransNumToString(num int64)(string,error){
 func TransStringToNum(str string)(int64,error){
 
 	return 0,nil
+}
+
+
+func TimeNow()(time.Time){
+	return time.Now()
+}
+
+
+func DuringTime(start time.Time,taskname string){
+
+	endTime:=time.Now()
+	fmt.Printf("[INFO] [[ %v ]] COST Time %v \n",taskname,endTime.Sub(start))
+
 }
 
 
