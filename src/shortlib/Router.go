@@ -48,16 +48,9 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	processor,_:=this.Processors[action]
-	processor.ProcessRequest(r.Method,params,body,w)
-	switch action {
-		//请求的是短连接，需要返回跳转的原始连接
-		case SHORT_URL:
-		
-		//请求的是长连接，申请一个短连接
-		case ORIGINAL_URL:
-			fmt.Printf("[INFO]into OriginalProcessor\n")
-		default:
-			fmt.Printf("[ERROR]Unknow url...:%v \n",r.RequestURI)
+	err = processor.ProcessRequest(r.Method,params,body,w)
+	if err != nil {
+		fmt.Printf("[ERROR] : %v\n",err)
 	}
 	
 	return 

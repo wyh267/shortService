@@ -14,7 +14,7 @@ import (
 )
 
 type ShortProcessor struct {
-	BaseProcessor *shortlib.BaseProcessor
+ *shortlib.BaseProcessor
 }
 
 

@@ -33,9 +33,15 @@ func main(){
 		fmt.Printf("[ERROR] Redis init fail..\n")
 		return
 	}
-	
+	if configure.GetRedisStatus(){
+	err = redis_cli.InitCountService()
+	if err != nil {
+		fmt.Printf("[ERROR] Init Redis key count fail...\n")
+	}
+	}
+
 	//初始化两个短连接服务
-	baseprocessor := &shortlib.BaseProcessor{redis_cli}
+	baseprocessor := &shortlib.BaseProcessor{redis_cli,configure,configure.GetHostInfo()}
 	
 	original := &OriginalProcessor{baseprocessor}
 	short := &ShortProcessor{baseprocessor}

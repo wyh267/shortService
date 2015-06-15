@@ -102,3 +102,32 @@ func (this *Configure) GetRedisPort() (string, error) {
 	return redisport, nil
 }
 
+
+func (this *Configure) GetRedisStatus()(bool) {
+
+	status,ok := this.ConfigureMap["status"]
+	if ok == false {
+		return  true
+	}
+
+	if status == "true"{
+		return true
+	}
+	return false
+
+}
+
+
+func (this *Configure) GetHostInfo() string {
+
+	host_name,ok := this.ConfigureMap["hostname"]
+	if ok == false {
+		return "http://wusay.org/"
+	}
+
+	return host_name
+
+
+}
+
+

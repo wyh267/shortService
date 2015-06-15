@@ -15,17 +15,17 @@ import (
 	"errors"
 	"io"
 	"encoding/json"
-	"fmt"
+//	"fmt"
 )
 
 type OriginalProcessor struct {
-	BaseProcessor *shortlib.BaseProcessor
+	*shortlib.BaseProcessor
 }
 
 const POST string = "POST"
 const TOKEN string = "token"
 const ORIGINAL_URL string = "original"
-
+const SHORT_URL string = "short"
 /*
 *
 *
@@ -38,13 +38,11 @@ const ORIGINAL_URL string = "original"
 *
 */
 func (this *OriginalProcessor) ProcessRequest(method string,params map[string]string,body []byte,w http.ResponseWriter) error{
-	fmt.Printf("[INFO]in OriginalProcessor ProcessRequest")	
 	if method != POST{
 		return errors.New("Create short url must be POST the information")
 	}
-
 	var bodyInfo map[string]interface{}
-	err := json.Unmarshal(body,bodyInfo)
+	err := json.Unmarshal(body,&bodyInfo)
 	if err != nil{
 		return err
 	}
@@ -75,21 +73,46 @@ func (this *OriginalProcessor) ProcessRequest(method string,params map[string]st
 		return err
 	}
 
+
+	//add head information
+	header := w.Header()
+	header.Add("Content-Type","application/json")
+	header.Add("charset","UTF-8")
 	io.WriteString(w,response)
 
 
 	return nil
 }
 
-
+//
+//生成short url
+//
+//
 func (this *OriginalProcessor) createUrl(original_url string) (string,error){
 
-	return "string",nil
+	count,err := this.RedisCli.NewShortUrlCount()
+	if err != nil {
+		return "",err
+	}
+	short_url,err := shortlib.TransNumToString(count)
+	if err != nil {
+		return "",err
+	}
+
+	return short_url,nil
 
 }
 
 
 func (this *OriginalProcessor) createResponseJson(short_url string)(string,error){
 
-	return "string",nil
+	json_res := make(map[string]interface{})
+	json_res[SHORT_URL]=this.HostName + short_url
+
+	res,err := json.Marshal(json_res)
+	if err != nil {
+		return "",err
+	}
+
+	return string(res),nil
 }

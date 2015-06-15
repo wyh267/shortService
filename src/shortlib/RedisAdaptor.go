@@ -17,6 +17,8 @@ type RedisAdaptor struct {
 	config *Configure
 }
 
+const SHORT_URL_COUNT_KEY string = "short_url_count"
+
 func NewRedisAdaptor(config *Configure) (*RedisAdaptor, error) {
 	redis_cli := &RedisAdaptor{}
 	redis_cli.config = config
@@ -38,6 +40,29 @@ func NewRedisAdaptor(config *Configure) (*RedisAdaptor, error) {
 
 func (this *RedisAdaptor) Release() {
 	this.conn.Close()
+}
+
+
+func (this *RedisAdaptor) InitCountService() error {
+
+	_,err := this.conn.Do("SET",SHORT_URL_COUNT_KEY,0)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+
+func (this *RedisAdaptor) NewShortUrlCount() (int64,error){
+
+	count,err := redis.Int64(this.conn.Do("INCR",SHORT_URL_COUNT_KEY))
+	if err != nil {
+		return 0,err
+	}
+
+	return count,nil	
+
 }
 
 /*

@@ -23,5 +23,7 @@ type Processor interface{
 
 type BaseProcessor struct{
 	RedisCli *RedisAdaptor
+	Configure *Configure
+	HostName  string
 }
 
