@@ -36,7 +36,7 @@ const SHORT_URL string = "short"
 *
 *
 */
-func (this *OriginalProcessor) ProcessRequest(method,request_url string, params map[string]string, body []byte, w http.ResponseWriter,r *http.Request) error {
+func (this *OriginalProcessor) ProcessRequest(method, request_url string, params map[string]string, body []byte, w http.ResponseWriter, r *http.Request) error {
 	if method != POST {
 		return errors.New("Create short url must be POST the information")
 	}
@@ -86,33 +86,33 @@ func (this *OriginalProcessor) ProcessRequest(method,request_url string, params 
 //
 func (this *OriginalProcessor) createUrl(original_url string) (string, error) {
 
-	short,err :=this.Lru.GetShortURL(original_url)
-	if err == nil{
-//		fmt.Printf("[INFO] Match the short url : %v ===> %v\n",original_url,short)
-		return short,nil
+	short, err := this.Lru.GetShortURL(original_url)
+	if err == nil {
+		//		fmt.Printf("[INFO] Match the short url : %v ===> %v\n",original_url,short)
+		return short, nil
 	}
-/*
-	count, err := this.RedisCli.NewShortUrlCount()
+	/*
+		count, err := this.RedisCli.NewShortUrlCount()
+		if err != nil {
+			return "", err
+		}
+
+		count_c := make(chan int64)
+		ch:=shortlib.CountChannl{0,count_c}
+		this.Count_Channl <- ch
+		count := <- count_c
+	*/
+
+	count, err := this.CountFunction()
 	if err != nil {
 		return "", err
-	}
-	
-	count_c := make(chan int64)
-	ch:=shortlib.CountChannl{0,count_c}
-	this.Count_Channl <- ch
-	count := <- count_c
-*/
-
-	count,err := this.CountFunction()
-	if err != nil {
-		return "",err
 	}
 	short_url, err := shortlib.TransNumToString(count)
 	if err != nil {
 		return "", err
 	}
 	//将对应关系添加到LRU缓存中
-	this.Lru.SetURL(original_url,short_url)
+	this.Lru.SetURL(original_url, short_url)
 	return short_url, nil
 
 }

@@ -10,7 +10,7 @@ package shortlib
 import (
 	"container/list"
 	"errors"
-//	"fmt"
+	//	"fmt"
 )
 
 type UrlElement struct {
@@ -36,7 +36,7 @@ func (this *LRU) GetOriginalURL(short_url string) (string, error) {
 	element, ok := this.HashShortUrl[short_url]
 	//没有找到key,从Redis获取
 	if !ok {
-		original_url,err :=this.RedisCli.GetUrl(short_url)
+		original_url, err := this.RedisCli.GetUrl(short_url)
 		//Redis也没有相应的短连接，无法提供服务
 		if err != nil {
 			return "", errors.New("No URL")
@@ -45,13 +45,13 @@ func (this *LRU) GetOriginalURL(short_url string) (string, error) {
 		ele := this.ListUrl.PushFront(UrlElement{original_url, short_url})
 		this.HashShortUrl[short_url] = ele
 		this.HashOriginUrl[original_url] = ele
-		return original_url,nil
+		return original_url, nil
 	}
 
 	//调整位置
 	this.ListUrl.MoveToFront(element)
 	ele, _ := element.Value.(UrlElement)
-	return ele.Original,nil
+	return ele.Original, nil
 }
 
 func (this *LRU) GetShortURL(original_url string) (string, error) {
@@ -87,8 +87,8 @@ func (this *LRU) SetURL(original_url, short_url string) error {
 	this.HashOriginUrl[original_url] = ele
 	//将数据存入Redis中
 	//fmt.Printf("SET TO REDIS :: short : %v ====> original : %v \n",short_url,original_url)
-	err :=this.RedisCli.SetUrl(short_url,original_url)
-	if err !=nil{
+	err := this.RedisCli.SetUrl(short_url, original_url)
+	if err != nil {
 		return err
 	}
 	return nil

@@ -123,8 +123,7 @@ func (this *Configure) GetHostInfo() string {
 
 }
 
-
-func (this *Configure) GetCounterType() string{
+func (this *Configure) GetCounterType() string {
 
 	count_type, ok := this.ConfigureMap["counter"]
 	if ok == false {
@@ -132,6 +131,5 @@ func (this *Configure) GetCounterType() string{
 	}
 
 	return count_type
-
 
 }

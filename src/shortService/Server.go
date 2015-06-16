@@ -47,16 +47,16 @@ func main() {
 	count_channl := make(chan shortlib.CountChannl, 1000)
 	go CountThread(count_channl)
 
-	countfunction := shortlib.CreateCounter(configure.GetCounterType(),count_channl,redis_cli)
+	countfunction := shortlib.CreateCounter(configure.GetCounterType(), count_channl, redis_cli)
 	//启动LRU缓存
 	fmt.Printf("[INFO] Start LRU Cache System...\n")
-	lru,err := shortlib.NewLRU(redis_cli)
+	lru, err := shortlib.NewLRU(redis_cli)
 	if err != nil {
 		fmt.Printf("[ERROR]LRU init fail...\n")
 	}
 	//初始化两个短连接服务
 	fmt.Printf("[INFO] Start Service...\n")
-	baseprocessor := &shortlib.BaseProcessor{redis_cli, configure, configure.GetHostInfo(),lru,countfunction}
+	baseprocessor := &shortlib.BaseProcessor{redis_cli, configure, configure.GetHostInfo(), lru, countfunction}
 
 	original := &OriginalProcessor{baseprocessor, count_channl}
 	short := &ShortProcessor{baseprocessor}

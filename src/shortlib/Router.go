@@ -49,23 +49,21 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	if r.Method == "GET" {
-		action=0
-	}else{
-		action=1
+		action = 0
+	} else {
+		action = 1
 	}
 
-	
 	processor, _ := this.Processors[action]
-	err = processor.ProcessRequest(r.Method,request_url,params, body, w,r)
+	err = processor.ProcessRequest(r.Method, request_url, params, body, w, r)
 	if err != nil {
 		fmt.Printf("[ERROR] : %v\n", err)
 	}
 	if action == 0 {
-	DuringTime(start, "REDIRECT URL ")
-	}else{
-	DuringTime(start,"CREATE SHORTURL ")
+		DuringTime(start, "REDIRECT URL ")
+	} else {
+		DuringTime(start, "CREATE SHORTURL ")
 	}
 	return
 }
