@@ -18,7 +18,7 @@ import (
 
 type OriginalProcessor struct {
 	*shortlib.BaseProcessor
-	Count_Channl chan CountChannl
+	Count_Channl chan shortlib.CountChannl
 }
 
 const POST string = "POST"
@@ -98,12 +98,17 @@ func (this *OriginalProcessor) createUrl(original_url string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-*/	
+	
 	count_c := make(chan int64)
-	ch:=CountChannl{0,count_c}
+	ch:=shortlib.CountChannl{0,count_c}
 	this.Count_Channl <- ch
 	count := <- count_c
-	
+*/
+
+	count,err := this.CountFunction()
+	if err != nil {
+		return "",err
+	}
 	shortlib.DuringTime(start, "NewShortUrlCount")
 	start = shortlib.TimeNow()
 	short_url, err := shortlib.TransNumToString(count)

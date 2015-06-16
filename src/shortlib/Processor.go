@@ -24,4 +24,5 @@ type BaseProcessor struct {
 	Configure *Configure
 	HostName  string
 	Lru *LRU
+	CountFunction CreateCountFunc
 }

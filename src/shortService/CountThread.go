@@ -9,14 +9,10 @@ package main
 
 import (
 	"fmt"
+	"shortlib"
 )
 
-type CountChannl struct {
-	Ok           int64
-	CountOutChan chan int64
-}
-
-func CountThread(count_chan_in chan CountChannl) {
+func CountThread(count_chan_in chan shortlib.CountChannl) {
 
 	var count int64
 	count = 1000

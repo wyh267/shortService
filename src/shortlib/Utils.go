@@ -13,6 +13,13 @@ import (
 	"time"
 )
 
+type CountChannl struct {
+	Ok           int64
+	CountOutChan chan int64
+}
+
+type CreateCountFunc func()(int64,error)
+
 func IsAllowToken(token string) bool {
 	return true
 
@@ -57,3 +64,33 @@ func DuringTime(start time.Time, taskname string) {
 	fmt.Printf("[INFO] [[ %v ]] COST Time %v \n", taskname, endTime.Sub(start))
 
 }
+
+
+
+func CreateCounter(count_type string,count_chan chan CountChannl,rediscli *RedisAdaptor)(CreateCountFunc){
+
+	if count_type == "inner"{
+		return func ()(int64,error){
+		count_c := make(chan int64)
+	ch:=CountChannl{0,count_c}
+	count_chan <- ch
+	count := <- count_c
+		return count,nil	
+		}
+	}else{
+		return func ()(int64,error){
+		count, err := rediscli.NewShortUrlCount()
+		if err != nil {
+		return 0, err
+		}
+		return count,nil
+		}
+	}
+
+
+}
+
+
+
+
+

@@ -33,6 +33,7 @@ func main() {
 		fmt.Printf("[ERROR] Redis init fail..\n")
 		return
 	}
+	//是否初始化Redis计数器，如果为ture就初始化计数器
 	if configure.GetRedisStatus() {
 		err = redis_cli.InitCountService()
 		if err != nil {
@@ -41,16 +42,17 @@ func main() {
 	}
 
 	//不使用redis的情况下，启动短链接计数器
-	count_channl := make(chan CountChannl, 1000)
+	count_channl := make(chan shortlib.CountChannl, 1000)
 	go CountThread(count_channl)
 
+	countfunction := shortlib.CreateCounter(configure.GetCounterType(),count_channl,redis_cli)
 	//启动LRU缓存
 	lru,err := shortlib.NewLRU(redis_cli)
 	if err != nil {
 		fmt.Printf("[ERROR]LRU init fail...\n")
 	}
 	//初始化两个短连接服务
-	baseprocessor := &shortlib.BaseProcessor{redis_cli, configure, configure.GetHostInfo(),lru}
+	baseprocessor := &shortlib.BaseProcessor{redis_cli, configure, configure.GetHostInfo(),lru,countfunction}
 
 	original := &OriginalProcessor{baseprocessor, count_channl}
 	short := &ShortProcessor{baseprocessor}

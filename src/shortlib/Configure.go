@@ -122,3 +122,16 @@ func (this *Configure) GetHostInfo() string {
 	return host_name
 
 }
+
+
+func (this *Configure) GetCounterType() string{
+
+	count_type, ok := this.ConfigureMap["counter"]
+	if ok == false {
+		return "inner"
+	}
+
+	return count_type
+
+
+}
