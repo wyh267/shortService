@@ -31,7 +31,8 @@ const (
 func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	start := TimeNow()
-	action, err := this.ParseUrl(r.RequestURI)
+	request_url := r.RequestURI[1:]
+	action, err := this.ParseUrl(request_url)
 	if err != nil {
 		fmt.Printf("[ERROR]parse url fail : %v \n", err)
 	}
@@ -48,12 +49,24 @@ func (this *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
+	if r.Method == "GET" {
+		action=0
+	}else{
+		action=1
+	}
+
+	
 	processor, _ := this.Processors[action]
-	err = processor.ProcessRequest(r.Method, params, body, w)
+	err = processor.ProcessRequest(r.Method,request_url,params, body, w,r)
 	if err != nil {
 		fmt.Printf("[ERROR] : %v\n", err)
 	}
-	DuringTime(start, "ServeHTTP")
+	if action == 0 {
+	DuringTime(start, "REDIRECT URL ")
+	}else{
+	DuringTime(start,"CREATE SHORTURL ")
+	}
 	return
 }
 

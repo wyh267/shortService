@@ -21,6 +21,7 @@ func main() {
 	flag.Parse()
 
 	//读取配置文件
+	fmt.Printf("[INFO] Read configure file...\n")
 	configure, err := shortlib.NewConfigure(configFile)
 	if err != nil {
 		fmt.Printf("[ERROR] Parse Configure File Error: %v\n", err)
@@ -28,6 +29,7 @@ func main() {
 	}
 
 	//启动Redis客户端
+	fmt.Printf("[INFO] Start Redis Client...\n")
 	redis_cli, err := shortlib.NewRedisAdaptor(configure)
 	if err != nil {
 		fmt.Printf("[ERROR] Redis init fail..\n")
@@ -47,11 +49,13 @@ func main() {
 
 	countfunction := shortlib.CreateCounter(configure.GetCounterType(),count_channl,redis_cli)
 	//启动LRU缓存
+	fmt.Printf("[INFO] Start LRU Cache System...\n")
 	lru,err := shortlib.NewLRU(redis_cli)
 	if err != nil {
 		fmt.Printf("[ERROR]LRU init fail...\n")
 	}
 	//初始化两个短连接服务
+	fmt.Printf("[INFO] Start Service...\n")
 	baseprocessor := &shortlib.BaseProcessor{redis_cli, configure, configure.GetHostInfo(),lru,countfunction}
 
 	original := &OriginalProcessor{baseprocessor, count_channl}
@@ -67,7 +71,7 @@ func main() {
 
 	port, _ := configure.GetPort()
 	addr := fmt.Sprintf(":%d", port)
-	fmt.Printf("[INFO]服务启动。。。地址:%v,端口:%v\n", addr, port)
+	fmt.Printf("[INFO]Service Starting addr :%v,port :%v\n", addr, port)
 	err = http.ListenAndServe(addr, router)
 	if err != nil {
 		//logger.Error("Server start fail: %v", err)

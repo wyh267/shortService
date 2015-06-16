@@ -10,7 +10,7 @@ package shortlib
 import (
 	"container/list"
 	"errors"
-	"fmt"
+//	"fmt"
 )
 
 type UrlElement struct {
@@ -28,16 +28,24 @@ type LRU struct {
 func NewLRU(redis_cli *RedisAdaptor) (*LRU, error) {
 
 	lru := &LRU{make(map[string]*list.Element), make(map[string]*list.Element), list.New(), redis_cli}
-	fmt.Printf("New LRU Monery Pool\n")
 	return lru, nil
 }
 
 func (this *LRU) GetOriginalURL(short_url string) (string, error) {
 
-	element, ok := this.HashOriginUrl[short_url]
+	element, ok := this.HashShortUrl[short_url]
 	//没有找到key,从Redis获取
 	if !ok {
-		return "", errors.New("No URL")
+		original_url,err :=this.RedisCli.GetUrl(short_url)
+		//Redis也没有相应的短连接，无法提供服务
+		if err != nil {
+			return "", errors.New("No URL")
+		}
+		//更新LRU缓存
+		ele := this.ListUrl.PushFront(UrlElement{original_url, short_url})
+		this.HashShortUrl[short_url] = ele
+		this.HashOriginUrl[original_url] = ele
+		return original_url,nil
 	}
 
 	//调整位置
@@ -77,7 +85,12 @@ func (this *LRU) SetURL(original_url, short_url string) error {
 	ele := this.ListUrl.PushFront(UrlElement{original_url, short_url})
 	this.HashShortUrl[short_url] = ele
 	this.HashOriginUrl[original_url] = ele
-	//	fmt.Printf("PushFront:::: ELEMENT : %v.\t HASH: %v\n",ele,this.HashUrl[original_url])
+	//将数据存入Redis中
+	//fmt.Printf("SET TO REDIS :: short : %v ====> original : %v \n",short_url,original_url)
+	err :=this.RedisCli.SetUrl(short_url,original_url)
+	if err !=nil{
+		return err
+	}
 	return nil
 
 }

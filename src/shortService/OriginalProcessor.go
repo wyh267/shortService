@@ -13,7 +13,6 @@ import (
 	"io"
 	"net/http"
 	"shortlib"
-	"fmt"
 )
 
 type OriginalProcessor struct {
@@ -37,7 +36,7 @@ const SHORT_URL string = "short"
 *
 *
 */
-func (this *OriginalProcessor) ProcessRequest(method string, params map[string]string, body []byte, w http.ResponseWriter) error {
+func (this *OriginalProcessor) ProcessRequest(method,request_url string, params map[string]string, body []byte, w http.ResponseWriter,r *http.Request) error {
 	if method != POST {
 		return errors.New("Create short url must be POST the information")
 	}
@@ -87,10 +86,9 @@ func (this *OriginalProcessor) ProcessRequest(method string, params map[string]s
 //
 func (this *OriginalProcessor) createUrl(original_url string) (string, error) {
 
-	start := shortlib.TimeNow()
 	short,err :=this.Lru.GetShortURL(original_url)
 	if err == nil{
-		fmt.Printf("[INFO] Match the short url : %v ===> %v\n",original_url,short)
+//		fmt.Printf("[INFO] Match the short url : %v ===> %v\n",original_url,short)
 		return short,nil
 	}
 /*
@@ -109,15 +107,12 @@ func (this *OriginalProcessor) createUrl(original_url string) (string, error) {
 	if err != nil {
 		return "",err
 	}
-	shortlib.DuringTime(start, "NewShortUrlCount")
-	start = shortlib.TimeNow()
 	short_url, err := shortlib.TransNumToString(count)
 	if err != nil {
 		return "", err
 	}
 	//将对应关系添加到LRU缓存中
 	this.Lru.SetURL(original_url,short_url)
-	shortlib.DuringTime(start, "TransNumToString")
 	return short_url, nil
 
 }

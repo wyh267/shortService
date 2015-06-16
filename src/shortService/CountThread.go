@@ -8,7 +8,7 @@
 package main
 
 import (
-	"fmt"
+//	"fmt"
 	"shortlib"
 )
 
@@ -16,9 +16,7 @@ func CountThread(count_chan_in chan shortlib.CountChannl) {
 
 	var count int64
 	count = 1000
-	fmt.Printf("Running CountThread")
 	for {
-		fmt.Printf("Get CountChannl")
 		select {
 		case ok := <-count_chan_in:
 			count = count + 1

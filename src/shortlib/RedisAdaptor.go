@@ -63,6 +63,31 @@ func (this *RedisAdaptor) NewShortUrlCount() (int64, error) {
 
 }
 
+
+func (this *RedisAdaptor) SetUrl(short_url,original_url string)error {
+
+	key:=fmt.Sprintf("short:%v",short_url)
+	_,err := this.conn.Do("SET",key,original_url)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
+func (this *RedisAdaptor) GetUrl(short_url string) (string,error) {
+
+key:=fmt.Sprintf("short:%v",short_url)
+	original_url,err := redis.String(this.conn.Do("GET",key))
+	if err != nil {
+		return "",err
+	}
+
+	return original_url,nil
+}
+
+
+
 /*
 func (this *RedisAdaptor) GetValue(cid int64, source string) (string, error) {
 	key := fmt.Sprintf("%v:%v", cid, source)

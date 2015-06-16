@@ -61,11 +61,14 @@ func TimeNow() time.Time {
 func DuringTime(start time.Time, taskname string) {
 
 	endTime := time.Now()
-	fmt.Printf("[INFO] [[ %v ]] COST Time %v \n", taskname, endTime.Sub(start))
+	fmt.Printf("[INFO] [ %v ] COST Time %v \n", taskname, endTime.Sub(start))
 
 }
 
 
+func IsShortUrl(short_url string)error{
+	return nil
+}
 
 func CreateCounter(count_type string,count_chan chan CountChannl,rediscli *RedisAdaptor)(CreateCountFunc){
 
